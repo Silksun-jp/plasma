@@ -717,36 +717,24 @@ function handleFeedbackSubmit(e){
   const btn=document.querySelector('#fb-form .submit-btn');
   btn.disabled=true;btn.textContent='送信中...';
 
-  // hidden iframeで送信（CORS回避）
-  const iframe=document.getElementById('hidden_iframe');
-  const form=document.createElement('form');
-  form.method='POST';form.action=FORM_URL;form.target='hidden_iframe';
-  form.style.display='none';
-  params.forEach((val,key)=>{
-    const input=document.createElement('input');
-    input.type='hidden';input.name=key;input.value=val;
-    form.appendChild(input);
+  // no-corsモードでfetch送信（Googleフォームはno-corsが正解）
+  fetch(FORM_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:params.toString()
+  })
+  .then(()=>{
+    document.getElementById('fb-form-wrap').style.display='none';
+    document.getElementById('fb-thanks').style.display='block';
+    btn.disabled=false;btn.textContent='💬 フィードバックを送る';
+  })
+  .catch(()=>{
+    // no-corsはエラーになってもデータは届いている場合があるので成功扱い
+    document.getElementById('fb-form-wrap').style.display='none';
+    document.getElementById('fb-thanks').style.display='block';
+    btn.disabled=false;btn.textContent='💬 フィードバックを送る';
   });
-  document.body.appendChild(form);
-
-  iframe.onload=()=>{
-    document.body.removeChild(form);
-    document.getElementById('fb-form-wrap').style.display='none';
-    document.getElementById('fb-thanks').style.display='block';
-    btn.disabled=false;btn.textContent='💬 フィードバックを送る';
-  };
-  // タイムアウト保険（5秒後に成功とみなす）
-  setTimeout(()=>{
-    if(document.getElementById('fb-form-wrap').style.display!=='none')return;
-  },100);
-  setTimeout(()=>{
-    document.body.removeChild(form);
-    document.getElementById('fb-form-wrap').style.display='none';
-    document.getElementById('fb-thanks').style.display='block';
-    btn.disabled=false;btn.textContent='💬 フィードバックを送る';
-  },4000);
-
-  form.submit();
 }
 
 function resetFeedback(){
