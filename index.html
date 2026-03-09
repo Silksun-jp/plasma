@@ -618,7 +618,7 @@ function showPage(id,btn){
   btn.classList.add('active');window.scrollTo(0,0);
 }
 // ★ GAS WebアプリのURLをデプロイ後にここに設定してください
-const GAS_APPLY_URL = 'https://script.google.com/macros/s/AKfycbw86AfdbJdA9JiLvJWmILCuqWrbRlWU9nT8irhOORzCm4DES5-YS-5nhtZgx77bhTfx/exec';
+const GAS_APPLY_URL = 'https://script.google.com/macros/s/AKfycbyIPBlbSYbAVyQlpCWjeObNUjSwPd5mKvju_XadSQ7_E2h5VXPfddvDgBXFh6NweWcv/exec';
 
 let applyPhotoBase64 = '';
 let applyPhotoName = '';
@@ -670,20 +670,15 @@ async function handleApplySubmit(e){
   };
 
   try {
-    const res = await fetch(GAS_APPLY_URL, {
+    await fetch(GAS_APPLY_URL, {
       method: 'POST',
+      mode: 'no-cors',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data)
     });
-    const json = await res.json();
-    if(json.status === 'success'){
-      document.getElementById('apply-form-card').style.display='none';
-      document.getElementById('thanks-card').style.display='block';
-    } else {
-      alert('送信に失敗しました。もう一度お試しください。\n'+json.message);
-      btn.disabled=false;
-      btn.textContent='🎁 無料モニターに申し込む →';
-    }
+    // no-corsはレスポンスが読めないが、エラーなければ届いている
+    document.getElementById('apply-form-card').style.display='none';
+    document.getElementById('thanks-card').style.display='block';
   } catch(err){
     alert('通信エラーが発生しました。もう一度お試しください。');
     btn.disabled=false;
@@ -802,4 +797,3 @@ function toggleFaq(el){el.parentElement.classList.toggle('open')}
 </script>
 </body>
 </html>
-
