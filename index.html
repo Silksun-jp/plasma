@@ -310,13 +310,14 @@ footer{position:relative;z-index:1;text-align:center;padding:36px 20px;
           <div class="field"><label>ふりがな<span class="req">※必須</span></label><input type="text" name="name_kana" placeholder="たなか はなこ" required></div>
         </div>
         <div class="row2">
-          <div class="field"><label>生年月日<span class="req">※必須</span></label><input type="text" name="birthday" placeholder="例：昭和45年5月3日" required></div>
+
           <div class="field"><label>性別</label>
             <select name="gender"><option value="">選択</option><option>男性</option><option>女性</option><option>回答しない</option></select></div>
         </div>
         <div class="field"><label>電話番号<span class="req">※必須</span></label><input type="tel" name="tel" placeholder="090-0000-0000" required></div>
         <div class="field"><label>メールアドレス</label><input type="email" name="email" placeholder="example@email.com"></div>
-        <div class="field"><label>ご住所（都道府県・市区町村まで）<span class="req">※必須</span></label><input type="text" name="address" placeholder="例：長野県小諸市○○" required></div>
+        <div class="field"><label>郵便番号<span class="req">※必須</span></label><div style="display:flex;gap:8px;"><input type="tel" id="zipcode" name="zipcode" placeholder="例：3840025" maxlength="7" style="flex:1;" ><button type="button" onclick="searchAddress()" style="padding:10px 16px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;">住所検索</button></div></div>
+        <div class="field"><label>ご住所<span class="req">※必須</span></label><input type="text" id="address-field" name="address" placeholder="郵便番号で自動入力されます" required></div>
         <div class="row2">
           <div class="field"><label>住居の種類<span class="req">※必須</span></label>
             <select name="house_type" required>
@@ -620,6 +621,20 @@ function showPage(id,btn){
 // ★ GAS WebアプリのURLをデプロイ後にここに設定してください
 const GAS_APPLY_URL = 'https://script.google.com/macros/s/AKfycbyIPBlbSYbAVyQlpCWjeObNUjSwPd5mKvju_XadSQ7_E2h5VXPfddvDgBXFh6NweWcv/exec';
 
+// 郵便番号検索
+async function searchAddress() {
+  const zip = document.getElementById('zipcode').value.replace(/[^0-9]/g, '');
+  if (zip.length !== 7) { alert('郵便番号を7桁で入力してください（ハイフンなし）'); return; }
+  try {
+    const res = await fetch('https://zipcloud.ibsnet.co.jp/api/search?zipcode=' + zip);
+    const data = await res.json();
+    if (data.results) {
+      const r = data.results[0];
+      document.getElementById('address-field').value = r.address1 + r.address2 + r.address3;
+    } else { alert('住所が見つかりませんでした。手動で入力してください。'); }
+  } catch(e) { alert('住所検索に失敗しました。手動で入力してください。'); }
+}
+
 let applyPhotoBase64 = '';
 let applyPhotoName = '';
 
@@ -657,7 +672,7 @@ async function handleApplySubmit(e){
   const data = {
     name_kanji:  form.name_kanji.value.trim(),
     name_kana:   form.name_kana.value.trim(),
-    birthday:    form.birthday.value.trim(),
+
     gender:      form.gender.value,
     tel:         form.tel.value.trim(),
     email:       form.email.value.trim(),
