@@ -263,9 +263,82 @@ textarea{resize:vertical;min-height:100px}
 #fb-thanks .back-btn:hover{transform:translateY(-2px)}
 footer{position:relative;z-index:1;text-align:center;padding:36px 20px;
   border-top:2px solid var(--border);font-size:12px;color:var(--muted);line-height:2.5;background:var(--white)}
+
+/* ===== EDIT MODE ===== */
+.edit-mode [data-editable]{outline:2px dashed #f59e0b;outline-offset:3px;cursor:text;border-radius:4px;min-height:1em}
+.edit-mode [data-editable]:hover{outline-color:#d97706;background:rgba(251,191,36,.08)}
+.edit-mode [data-editable]:focus{outline:2.5px solid #d97706;background:rgba(251,191,36,.12)}
+#edit-bar{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#1e293b;color:#fff;padding:10px 16px;
+  gap:10px;align-items:center;font-size:13px;font-family:'M PLUS Rounded 1c',sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.edit-mode #edit-bar{display:flex}
+#edit-bar .eb-title{font-weight:700;font-size:15px;flex-shrink:0;color:#fbbf24}
+#edit-bar .eb-note{color:#94a3b8;font-size:12px;flex:1;min-width:0}
+#edit-bar button{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;white-space:nowrap}
+#btn-panel{background:#3b82f6;color:#fff}
+#btn-export{background:#10b981;color:#fff}
+#btn-exit-edit{background:#475569;color:#fff}
+#edit-panel{display:none;position:fixed;top:0;right:0;bottom:0;z-index:9998;width:340px;max-width:90vw;
+  background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.15);overflow-y:auto;padding:70px 20px 32px}
+#edit-panel.open{display:block}
+#edit-panel h2{font-size:16px;font-weight:700;color:#1e293b;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #e2e8f0}
+.ep-field{margin-bottom:18px}
+.ep-field label{display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:6px;letter-spacing:.5px}
+.ep-field input,.ep-field textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-family:'M PLUS Rounded 1c',sans-serif;font-size:13px;color:#1e293b;outline:none}
+.ep-field textarea{resize:vertical;min-height:70px}
+.ep-field input:focus,.ep-field textarea:focus{border-color:#3b82f6}
+#btn-apply-urls{width:100%;padding:12px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;font-family:inherit}
+#btn-apply-urls:hover{background:#2563eb}
+.ep-section{font-size:11px;font-weight:700;letter-spacing:2px;color:#94a3b8;margin:24px 0 10px;padding-top:12px;border-top:1px solid #f1f5f9}
+.body-pad{margin-top:46px}
 </style>
 </head>
-<body>
+<body id="page-body">
+
+<!-- ===== EDIT BAR ===== -->
+<div id="edit-bar">
+  <span class="eb-title">✏️ 編集モード</span>
+  <span class="eb-note">オレンジ枠のテキストをクリックして直接編集できます</span>
+  <button id="btn-panel" onclick="togglePanel()">⚙️ URL設定</button>
+  <button id="btn-export" onclick="exportHTML()">⬇️ HTMLダウンロード</button>
+  <button id="btn-exit-edit" onclick="exitEdit()">✕ 終了</button>
+</div>
+
+<!-- ===== EDIT PANEL ===== -->
+<div id="edit-panel">
+  <h2>⚙️ システム設定</h2>
+  <div class="ep-section">申込フォーム送信先</div>
+  <div class="ep-field">
+    <label>GAS WebアプリURL</label>
+    <input type="text" id="ep-gas-url" placeholder="https://script.google.com/...">
+  </div>
+  <div class="ep-section">LINEアカウント</div>
+  <div class="ep-field">
+    <label>LINE公式アカウントID（@から始まる）</label>
+    <input type="text" id="ep-line-id" placeholder="@569kkjri">
+  </div>
+  <div class="ep-section">申込完了画面のLINEリンク</div>
+  <div class="ep-field">
+    <label>プレビュー（現在のリンク先）</label>
+    <input type="text" id="ep-line-url" placeholder="https://line.me/R/ti/p/@...">
+  </div>
+  <div class="ep-section">フィードバック送信先</div>
+  <div class="ep-field">
+    <label>Google FormsのURL（formResponse）</label>
+    <input type="text" id="ep-gform-url" placeholder="https://docs.google.com/forms/.../formResponse">
+  </div>
+  <div class="ep-section">フッター</div>
+  <div class="ep-field">
+    <label>フッターテキスト（1行目）</label>
+    <input type="text" id="ep-footer1" placeholder="からだと住まいの健康プログラム　運営：Silksun">
+  </div>
+  <div class="ep-field">
+    <label>フッターテキスト（2行目）</label>
+    <input type="text" id="ep-footer2" placeholder="お問い合わせはLINEまたはお電話にてご連絡ください">
+  </div>
+  <button id="btn-apply-urls" onclick="applySettings()">✅ 設定を反映</button>
+  <p style="font-size:11px;color:#94a3b8;margin-top:10px;line-height:1.8">設定反映後に「HTMLダウンロード」でファイルを書き出してください</p>
+</div>
+
 <nav>
   <button class="tab active" onclick="showPage('apply',this)">📋 お申込み</button>
   <button class="tab" onclick="showPage('feedback',this)">💬 フィードバック</button>
@@ -275,30 +348,30 @@ footer{position:relative;z-index:1;text-align:center;padding:36px 20px;
 <!-- PAGE 1 -->
 <div id="page-apply" class="page active">
   <div class="hero">
-    <div class="hero-badge">🎁 無料モニター募集中</div>
-    <h1>瞳孔診断と<em>プラズマ技術</em>で<br>あなたの健康をサポート</h1>
-    <p>メカラ（瞳孔測定）による健康状態チェックと、<br>住環境を整える最先端テクノロジーを組み合わせた<br>体感型プログラムへようこそ</p>
+    <div class="hero-badge" data-editable id="hero-badge">🎁 無料モニター募集中</div>
+    <h1 data-editable id="hero-h1">瞳孔診断と<em>プラズマ技術</em>で<br>あなたの健康をサポート</h1>
+    <p data-editable id="hero-p">メカラ（瞳孔測定）による健康状態チェックと、<br>住環境を整える最先端テクノロジーを組み合わせた<br>体感型プログラムへようこそ</p>
   </div>
   <div class="wrap">
     <div class="free-banner">
       <div class="free-tag">🎁 期間限定・無料モニター募集</div>
-      <h3>今だけ<span>完全無料</span>でご参加いただけます</h3>
-      <p>通常有料のプログラムを、モニター参加者様に限り<b>無料</b>でご提供しています。<br>
+      <h3 data-editable id="free-banner-h3">今だけ<span>完全無料</span>でご参加いただけます</h3>
+      <p data-editable id="free-banner-p">通常有料のプログラムを、モニター参加者様に限り<b>無料</b>でご提供しています。<br>
       ご体験いただいた変化・感じたことをフィードバックしていただくことが条件です。</p>
-      <div class="condition">
+      <div class="condition" data-editable id="free-condition">
         ✅ モニター期間中：<b>完全無料</b>　　✅ 工事不要・シールを貼るだけ　　✅ いつでも退会できます
       </div>
-      <div class="fee-note">
+      <div class="fee-note" data-editable id="fee-note">
         ※ モニター期間終了後に継続をご希望の場合は、別途ご案内する<b>月額利用料</b>が発生します。<br>
         継続は完全に任意であり、自動的な課金・更新は一切行いません。
       </div>
     </div>
     <div class="sec-label">PROGRAM FEATURES　プログラムの特徴</div>
     <div class="features">
-      <div class="feat"><div class="icon">👁️</div><h4>メカラ瞳孔診断</h4><p>瞳孔から健康状態を可視化。変化を数値で確認できます</p></div>
-      <div class="feat"><div class="icon">⚡</div><h4>プラズマ転写</h4><p>特殊プレートを貼るだけ。工事不要・住まいを整えます</p></div>
-      <div class="feat"><div class="icon">📊</div><h4>継続フィードバック</h4><p>感じたことをいつでも記録。あなたの体験が大切な記録に</p></div>
-      <div class="feat"><div class="icon">🤝</div><h4>専門家サポート</h4><p>疑問はLINEでいつでも相談。丁寧にお答えします</p></div>
+      <div class="feat"><div class="icon" data-editable>👁️</div><h4 data-editable>メカラ瞳孔診断</h4><p data-editable>瞳孔から健康状態を可視化。変化を数値で確認できます</p></div>
+      <div class="feat"><div class="icon" data-editable>⚡</div><h4 data-editable>プラズマ転写</h4><p data-editable>特殊プレートを貼るだけ。工事不要・住まいを整えます</p></div>
+      <div class="feat"><div class="icon" data-editable>📊</div><h4 data-editable>継続フィードバック</h4><p data-editable>感じたことをいつでも記録。あなたの体験が大切な記録に</p></div>
+      <div class="feat"><div class="icon" data-editable>🤝</div><h4 data-editable>専門家サポート</h4><p data-editable>疑問はLINEでいつでも相談。丁寧にお答えします</p></div>
     </div>
     <div class="sec-label">APPLICATION FORM　お申込みフォーム</div>
     <div id="apply-form-card" class="form-card">
@@ -619,7 +692,7 @@ footer{position:relative;z-index:1;text-align:center;padding:36px 20px;
   </div>
 </div>
 
-<footer>からだと住まいの健康プログラム　運営：Silksun<br>お問い合わせはLINEまたはお電話にてご連絡ください</footer>
+<footer id="site-footer"><span data-editable id="footer-line1">からだと住まいの健康プログラム　運営：Silksun</span><br><span data-editable id="footer-line2">お問い合わせはLINEまたはお電話にてご連絡ください</span></footer>
 <iframe name="hidden_iframe" style="display:none;"></iframe>
 <script>
 function showPage(id,btn){
@@ -819,6 +892,170 @@ function resetFeedback(){
   document.getElementById('fb-thanks').style.display='none';
 }
 function toggleFaq(el){el.parentElement.classList.toggle('open')}
+</script>
+<script>
+/* ===================================================
+   EDIT MODE  ─  URL に ?edit を付けて起動
+   =================================================== */
+(function(){
+  const params = new URLSearchParams(location.search);
+  if(!params.has('edit')) return;
+
+  // body にクラスを付けてモードON
+  document.body.classList.add('edit-mode');
+
+  // nav の下に余白
+  document.querySelector('nav').insertAdjacentHTML('afterend','<div class="body-pad"></div>');
+
+  // data-editable 要素を contenteditable に
+  document.querySelectorAll('[data-editable]').forEach(el=>{
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+  });
+
+  // パネルの現在値をセット
+  _initPanel();
+})();
+
+function _initPanel(){
+  // GAS URL
+  const gasMatch = document.body.innerHTML.match(/const GAS_APPLY_URL\s*=\s*'([^']+)'/);
+  if(gasMatch) document.getElementById('ep-gas-url').value = gasMatch[1];
+
+  // LINE ID（友だち追加リンクから）
+  const lineEl = document.querySelector('a[href*="line.me"]');
+  if(lineEl){
+    const href = lineEl.getAttribute('href');
+    document.getElementById('ep-line-url').value = href;
+    const m = href.match(/ti\/p\/(@[^"]+)/);
+    if(m) document.getElementById('ep-line-id').value = m[1];
+  }
+
+  // Google Forms URL
+  const gfMatch = document.body.innerHTML.match(/const FORM_URL\s*=\s*'([^']+)'/);
+  if(gfMatch) document.getElementById('ep-gform-url').value = gfMatch[1];
+
+  // フッター
+  const f1 = document.getElementById('footer-line1');
+  const f2 = document.getElementById('footer-line2');
+  if(f1) document.getElementById('ep-footer1').value = f1.textContent;
+  if(f2) document.getElementById('ep-footer2').value = f2.textContent;
+}
+
+function togglePanel(){
+  document.getElementById('edit-panel').classList.toggle('open');
+  _initPanel();
+}
+
+function applySettings(){
+  const gasUrl   = document.getElementById('ep-gas-url').value.trim();
+  const lineId   = document.getElementById('ep-line-id').value.trim();
+  const lineUrl  = document.getElementById('ep-line-url').value.trim() ||
+                   (lineId ? 'https://line.me/R/ti/p/'+lineId : '');
+  const gformUrl = document.getElementById('ep-gform-url').value.trim();
+  const f1 = document.getElementById('ep-footer1').value;
+  const f2 = document.getElementById('ep-footer2').value;
+
+  // フッター更新
+  if(f1) document.getElementById('footer-line1').textContent = f1;
+  if(f2) document.getElementById('footer-line2').textContent = f2;
+
+  // LINEリンク更新
+  if(lineUrl){
+    document.querySelectorAll('a[href*="line.me"]').forEach(a=>{
+      a.href = lineUrl;
+    });
+  }
+
+  // 画面上のGAS URLをハイライト表示（JSは下の exportHTML で置換）
+  _gasUrlForExport  = gasUrl  || null;
+  _gformUrlForExport = gformUrl || null;
+
+  document.getElementById('edit-panel').classList.remove('open');
+  _showToast('✅ 設定を反映しました。次に「HTMLダウンロード」を押してください');
+}
+
+let _gasUrlForExport  = null;
+let _gformUrlForExport = null;
+
+function exportHTML(){
+  // data-editable を外してcontenteditable削除
+  // edit-bar, edit-panel, body-pad を除いたcleanなHTMLを生成
+
+  const clone = document.documentElement.cloneNode(true);
+
+  // edit-mode クラス除去
+  clone.querySelector('#page-body').classList.remove('edit-mode');
+
+  // edit-bar 除去
+  const bar = clone.querySelector('#edit-bar');
+  if(bar) bar.remove();
+
+  // edit-panel 除去
+  const panel = clone.querySelector('#edit-panel');
+  if(panel) panel.remove();
+
+  // body-pad 除去
+  const pad = clone.querySelector('.body-pad');
+  if(pad) pad.remove();
+
+  // contenteditable 除去
+  clone.querySelectorAll('[contenteditable]').forEach(el=>{
+    el.removeAttribute('contenteditable');
+  });
+
+  // ===== EDIT MODE CSS 除去 =====
+  // style タグから /* ===== EDIT MODE ===== */ ブロックを除去
+  clone.querySelectorAll('style').forEach(s=>{
+    s.textContent = s.textContent.replace(/\/\* ===== EDIT MODE ===== \*\/[\s\S]*?\.body-pad\{[^}]*\}/,'');
+  });
+
+  // ===== 末尾のadmin script を除去 =====
+  clone.querySelectorAll('script').forEach(s=>{
+    if(s.textContent.includes('EDIT MODE') && s.textContent.includes('exportHTML')){
+      s.remove();
+    }
+  });
+
+  let html = '<!DOCTYPE html>\n' + clone.outerHTML;
+
+  // GAS URL 置換
+  if(_gasUrlForExport){
+    const safeOld = /(const GAS_APPLY_URL\s*=\s*')[^']+(')/.source;
+    html = html.replace(new RegExp(safeOld), "$1" + _gasUrlForExport + "$2");
+  }
+  // Google Forms URL 置換
+  if(_gformUrlForExport){
+    const safeOld2 = /(const FORM_URL\s*=\s*')[^']+(')/.source;
+    html = html.replace(new RegExp(safeOld2), "$1" + _gformUrlForExport + "$2");
+  }
+
+  // ダウンロード
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'index.html';
+  a.click();
+  _showToast('✅ index.html をダウンロードしました');
+}
+
+function exitEdit(){
+  const url = location.href.replace(/[?&]edit(&|$)/,'$1').replace(/[?&]$/,'');
+  location.href = url || location.pathname;
+}
+
+function _showToast(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style,{
+    position:'fixed',bottom:'24px',left:'50%',transform:'translateX(-50%)',
+    background:'#1e293b',color:'#fff',padding:'12px 24px',borderRadius:'10px',
+    fontSize:'14px',fontWeight:'700',zIndex:'99999',whiteSpace:'nowrap',
+    boxShadow:'0 4px 20px rgba(0,0,0,.3)'
+  });
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
 </script>
 </body>
 </html>
