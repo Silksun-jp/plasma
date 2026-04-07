@@ -63,6 +63,19 @@ nav::-webkit-scrollbar{display:none}
   margin-bottom:20px;display:flex;align-items:center;gap:12px}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
 .features{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:40px}
+.tech-section{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:32px 28px;margin-bottom:40px;box-shadow:var(--sh)}
+.tech-section h3{font-size:18px;font-weight:700;color:var(--blue-deep);margin-bottom:6px}
+.tech-section .tech-subtitle{font-size:12px;color:var(--blue);font-weight:700;letter-spacing:1px;margin-bottom:16px}
+.tech-section p{font-size:13px;color:var(--text2);line-height:2;margin-bottom:16px}
+.tech-box{background:#f0f8ff;border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:14px 18px;margin-bottom:12px}
+.tech-box .tech-box-title{font-size:13px;font-weight:700;color:var(--blue-deep);margin-bottom:6px}
+.tech-box p{font-size:12px;margin-bottom:0}
+.tech-products{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+@media(max-width:500px){.tech-products{grid-template-columns:1fr}}
+.tech-product{background:#f8fbff;border:1.5px solid var(--border);border-radius:12px;padding:18px 16px}
+.tech-product .prod-icon{font-size:28px;margin-bottom:8px}
+.tech-product h4{font-size:13px;font-weight:700;color:var(--blue-deep);margin-bottom:6px}
+.tech-product p{font-size:12px;color:var(--text2);line-height:1.9;margin-bottom:0}
 @media(max-width:500px){.features{grid-template-columns:1fr}}
 .feat{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);
   padding:22px 16px;text-align:center;box-shadow:var(--sh);transition:transform .2s,box-shadow .2s}
@@ -299,6 +312,28 @@ footer{position:relative;z-index:1;text-align:center;padding:36px 20px;
       <div class="feat"><div class="icon">⚡</div><h4>ハーモナイズ転写</h4><p>特殊シールを貼るだけ。工事不要・住まいを整えます</p></div>
       <div class="feat"><div class="icon">📊</div><h4>継続フィードバック</h4><p>感じたことをいつでも記録。あなたの体験が大切な記録に</p></div>
       <div class="feat"><div class="icon">🤝</div><h4>専門家サポート</h4><p>疑問はLINEでいつでも相談。丁寧にお答えします</p></div>
+    </div>
+    <div class="sec-label">ABOUT TECHNOLOGY　生体共鳴転写技術について</div>
+    <div class="tech-section">
+      <h3>「生体共鳴転写技術」とは</h3>
+      <div class="tech-subtitle">Bio-Resonance Transfer Technology</div>
+      <p>生体（人の体や生命体）が持つ固有の振動・周波数に、外部から特定の波長を共鳴させることで、体や生活環境のバランスを整える技術です。<br>「転写」とは、この有益な波長を物質（シール・ウエア）に定着させる加工プロセスを指します。一度転写された物質は、継続的に共鳴波を放出し続けます。</p>
+      <div class="tech-box">
+        <div class="tech-box-title">🔬 「共鳴」ってどういうこと？</div>
+        <p>ギターの弦を一本弾くと、同じ音程の弦が自然に振動する現象が「共鳴」です。医療現場のMRI（磁気共鳴画像診断）も同じ原理を応用しています。本技術では、特定の波長を転写したシールやウエアが、体や空間の乱れた周波数に共鳴して働きかけます。</p>
+      </div>
+      <div class="tech-products">
+        <div class="tech-product">
+          <div class="prod-icon">🏠</div>
+          <h4>配電盤用シール<br>（住まいへのアプローチ）</h4>
+          <p>家庭の電気配線が発する電磁波は、生活空間の周波数バランスに影響することがあります。シールを配電盤に貼ることで、空間の周波数を整え、より快適な生活環境をサポートします。</p>
+        </div>
+        <div class="tech-product">
+          <div class="prod-icon">👕</div>
+          <h4>リカバリーウエア<br>（体へのアプローチ）</h4>
+          <p>生地そのものに生体共鳴波長を転写加工。着用中、体の表面から継続的に共鳴波が働きかけることで、日常の疲労回復・体のバランス維持をサポートします。</p>
+        </div>
+      </div>
     </div>
     <div class="sec-label">APPLICATION FORM　お申込みフォーム</div>
     <div id="apply-form-card" class="form-card">
